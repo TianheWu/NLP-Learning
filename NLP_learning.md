@@ -22,7 +22,47 @@
 
 
 
+### 2021-1-26 chapter 1
 
+**PS：网上代码写的有问题，我这里进行了修改：**
+
+```python
+from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+vocab = ['an', 'arrow', 'banana', 'flies', 'fruit', 'like', 'time']
+corpus = ['Time flies flies like an arrow.',
+          'Fruit flies like a banana.']
+
+one_hot_vectorizer = CountVectorizer(binary=True)
+one_hot = one_hot_vectorizer.fit_transform(corpus).toarray()
+sns.heatmap(one_hot, annot=True,
+            cbar=False, xticklabels=vocab,
+            yticklabels=['Sentence 1', 'Sentence 2'])
+plt.show()
+```
+
+**TF-IDF = TF(w) * IDF(w)**
+
+TF表示对更频繁的单词进行加权，IDF表示惩罚常见的符号，并奖励向量表示中的罕见符号
+
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+vocab = ['an', 'arrow', 'banana', 'flies', 'fruit', 'like', 'time']
+corpus = ['Time flies flies like an arrow.',
+          'Fruit flies like a banana.']
+
+tfidf_vectorizer = TfidfVectorizer()
+tfidf = tfidf_vectorizer.fit_transform(corpus).toarray()
+sns.heatmap(tfidf, annot=True, cbar=False, xticklabels=vocab,
+            yticklabels= ['Sentence 1', 'Sentence 2'])
+
+plt.show()
+```
 
 
 
