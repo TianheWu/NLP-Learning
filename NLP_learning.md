@@ -64,9 +64,15 @@ sns.heatmap(tfidf, annot=True, cbar=False, xticklabels=vocab,
 plt.show()
 ```
 
+### 2021-1-27 chapter 1
 
+在安装了3天多pytorch后，终于安装好了。就别指望在windows下安装了，我是在linux ubuntu环境下安装的，要先安装好**Anaconda**，再安装conda包管理器，设置python环境，最后添加清华的镜像，才能快速下载，不然下载速度就和龟速一样。
 
+其中conda下载+配置网址为：https://blog.csdn.net/weixin_43840215/article/details/89599559
 
+加速下载pytorch网址为：https://cloud.tencent.com/developer/article/1588508
+
+最后导入pycharm中：https://zhuanlan.zhihu.com/p/263493426
 
 
 
