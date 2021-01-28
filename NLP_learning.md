@@ -121,7 +121,7 @@ describe(torch.Tensor(2, 3))
 # torch.transpose(x, 0, 1) 转置操作
 ```
 
-访问GPU时，要调用CUDA API。要对CUDA和非CUDA对象进行操作，我们需要确保它们在同一设备上。
+访问GPU时，要调用**CUDA API**。要对CUDA和非CUDA对象进行操作，我们需要确保它们在同一设备上。
 
 ```python
 import torch
@@ -136,3 +136,96 @@ describe(x)
 
 **将数据从GPU来回移动是非常昂贵的！！！！！！！！！！**
 
+
+
+### 2020-1-28 chapter 2
+
+语料库包含**原始文本**和**元数据**。
+
+**原始文本**：字符(字节)序列，但是大多数时候将字符分组成连续的称为令牌(Tokens)的连续单元是有用的。在英语中，令牌(Tokens)对应由空格字符或标点分隔的单词和数字序列。
+
+**元数据**：是与文本相关联的任何辅助信息，例如标识符，标签和时间戳。
+
+根据不同的文本处理包进行**令牌化Tokenizing：**
+
+```python
+import spacy
+nlp = spacy.load(‘en’)
+text = “Mary, don’t slap the green witch”
+print([str(token) for token in nlp(text.lower())])
+
+# Output:
+# ['mary', ',', 'do', "n't", 'slap', 'the', 'green', 'witch', '.']
+
+from nltk.tokenize import TweetTokenizer
+tweet = u"Snow White and the Seven Degrees
+    #MakeAMovieCold@midnight:-)"
+tokenizer = TweetTokenizer()
+print(tokenizer.tokenize(tweet.lower()))
+
+# Output:
+# ['snow', 'white', 'and', 'the', 'seven', 'degrees', '#makeamoviecold', '@midnight', ':-)']
+```
+
+**ngram**是文本中出现的固定长度(n)的连续令牌序列。
+
+```python
+def n_grams(text, n):
+    '''
+    takes tokens or text, returns a list of n grams
+    '''
+    return [text[i:i+n] for i in range(len(text)-n+1)]
+cleaned = ['mary', ',', "n't", 'slap', green', 'witch', '.']
+print(n_grams(cleaned, 3))
+           
+# Output:
+# [['mary', ',', "n't"],
+# [',', "n't", 'slap'],
+# ["n't", 'slap', 'green'],
+# ['slap', 'green', 'witch'],
+# ['green', 'witch', '.']]
+```
+
+**Lemmas**是单词的词根形式。考虑动词fly。它可以被屈折成许多不同的单词——flow、fly、flies、flying、flow等等——而fly是所有这些看似不同的单词的Lemmas。
+
+**Lemmatization:**
+
+```python
+import spacy
+nlp = spacy.load(‘en’)
+doc = nlp(u"he was running late")
+for token in doc:
+    print('{} --> {}'.format(token, token.lemma_))
+
+# Output:
+# he --> he
+# was --> be
+# running --> run
+# late --> late
+```
+
+词性标注**POS Tagging**：
+
+```python
+import spacy
+nlp = spacy.load(‘en’)
+doc = nlp(u"Mary slapped the green witch.")
+for token in doc:
+    print('{} - {}'.format(token, token.pos_))
+```
+
+浅解析(Shallow parsing)：推导出由名词、动词、形容词等语法原子组成的高阶单位。
+
+```python
+import spacy
+nlp = spacy.load(‘en’)
+doc  = nlp(u"Mary slapped the green witch.")
+for chunk in doc.noun_chunks:
+    print '{} - {}'.format(chunk, chunk.label_)
+
+# Output:
+# Mary - NP
+# the green witch - NP
+```
+
+浅层解析识别短语单位，而识别它们之间关系的任务称为解析(parsing)。
