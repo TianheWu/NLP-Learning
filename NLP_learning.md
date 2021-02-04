@@ -315,6 +315,66 @@ for epoch_i in range(n_epochs):
 
 **dropout**
 
+#### The Yelp Review Dataset
+
+1. Creating training, validation, and testing splits
+
+   ```python
+   # Splitting the subset by rating to create new train, val, and test splits
+   
+   # 创建一个字典，其中key是rating，value是row的内容
+   by_rating = collections.defaultdict(list)
+   for _, row in review_subset.iterrows():
+       by_rating[row.rating].append(row.to_dict())
+       
+   # Create split data
+   final_list = []
+   # 设置随机种子
+   np.random.seed(args.seed)
+   
+   for _, item_list in sorted(by_rating.items()):
+       # 对数据进行打乱，洗牌
+       np.random.shuffle(item_list)
+       
+       n_total = len(item_list)
+       
+       # 得到训练集的数量，验证集的数量，以及测试集的数量
+       n_train = int(args.train_proportion * n_total)
+       n_val = int(args.val_proportion * n_total)
+       n_test = int(args.test_proportion * n_total)
+       
+       # Give data point a split attribute
+       # 为每一部分的数据打上标签
+       for item in item_list[:n_train]:
+           item['split'] = 'train'
+       for item in item_list[n_train:n_train+n_val]:
+           item['split'] = 'val'
+       for item in item_list[n_train+n_val:n_train+n_val+n_test]:
+           item['split'] = 'test'
+           
+       # Add to final list
+       final_list.extend(item_list)
+   final_reviews = pd.DataFrame(final_list)
+   ```
+
+2. 在标点符号周围添加空格和删除并非所有分割都使用标点符号的无关符号来最低限度地清理数据
+
+   ```python
+   def preprocess_text(text):
+       text = text.lower()
+       text = re.sub(r"([.,!?])", r" \1 ", text)
+       text = re.sub(r"[^a-zA-Z.,!?]+", r" ", text)
+       return text
+   
+   final_reviews.review = final_reviews.review.apply(preprocess_text)
+   ```
+
+   
+
+
+
+
+
 ### 2021-2-01 chapter 4
 
 #### 多层感知器(MLP)
@@ -326,6 +386,71 @@ for epoch_i in range(n_epochs):
 翻遍了全网，这个是讲的最清晰的
 
 https://blog.csdn.net/Tink1995/article/details/104528624
+
+
+
+#### 2021-2-02 解决问题
+
+今天找高老师解答了问题。
+
+
+
+#### 2021-2-04 一些Pyhton基本函数掌握
+
+#### **collections.defaultdict**()
+
+可以通俗的理解为初始化一个哈希表，其中任何一个value值为空，python和C++不一样C++中unordered_map<int, int> _map; _map[3] = 1，一开始没有3的话那么不用初始化_map[3] = 0，python中需要初始化，而利用collections.defaultdict(list)就让一个字典的value值初始化为列表了。
+
+#### iterrows()
+
+这个是Pandas.DataFrame中的一个方法，它返回**每行的索引**，和**包含行数据**的一个对象
+
+#### np.random.seed()
+
+设置生成随机数的初始值，设置相同的值，那么生成的随机数是一样的。设置成不同的值，那么生成的随机数是不一样的（同不设置）。
+
+#### args.seed
+
+用在上面的函数中，为cpu生成随机数设置初始值。
+
+#### dict.items()
+
+items() 方法把字典中每对 key 和 value 组成一个元组，并把这些元组放在列表中返回
+
+#### np.random.shuffle()
+
+shuffle：学过系统结构后知道，这个是打乱顺序的意思。顾名思义，这个函数是用来**打乱列表数组中顺序**的函数。
+
+#### Python列表切片
+
+[start : end : step]，step正是向右切片，负是向左切片
+
+#### DataFrame
+
+首先要清楚，DataFrame是一个表格。用一个例子就很清楚了。其中index设置行标，columns设置列标。如果不人为修改index和columns那么就是默认的0, 1, 2, 3......（行和列均相同）
+
+```python
+data = DataFrame(np.arange(10,26).reshape((4, 4)),
+                 index=['Ohio', 'Colorado', 'Utah', 'New York'], 
+                 columns=['one', 'two', 'three', 'four'])
+print(data)
+# 	       one	two	three	four
+# Ohio	    10	11	12	13
+# Colorado	14	15	16	17
+# Utah	    18	19	20	21
+# New York	22	23	24	25
+
+```
+
+#### List extend()
+
+向一个列标一次添加很多个元素
+
+```python
+aList = [123, 'xyz', 'zara', 'abc', 123];
+bList = [2009, 'manni'];
+aList.extend(bList)
+```
 
 #### 暂存问题：
 
